@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;}
+    html,body{margin:0;height:100%;}
+    a{color:#166534;text-decoration:none;}
+    a:hover{color:#134e2b;}
+    ::-webkit-scrollbar{width:8px;height:8px;}
+    ::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.18);border-radius:4px;}
+    @keyframes typingDot{0%,60%,100%{opacity:0.3;transform:translateY(0);}30%{opacity:1;transform:translateY(-3px);}}
+    input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0;}
+  </style>
+</helmet>
+
+<template id="__bundler_thumbnail">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" fill="#0F766E"/><g transform="translate(60,60)" fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 76A12 12 0 0 1 20 64H70V4H20A12 12 0 0 0 8 16z"/><path d="M20 4H70v72H20a12 12 0 0 1-12-12V16A12 12 0 0 1 20 4z"/></g></svg>
+</template>
+
+<div style="width:100vw;height:100vh;display:flex;flex-direction:column;font-family:'Manrope',system-ui,sans-serif;background:{{ theme.bgApp }};color:{{ theme.textPrimary }};overflow:hidden;">
+
+  <header style="height:64px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:{{ theme.headerBg }};border-bottom:1px solid {{ theme.borderColor }};gap:12px;">
+    <div style="display:flex;align-items:center;gap:14px;min-width:0;">
+      <button onClick="{{ toggleSidebar }}" title="Toggle library" style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;flex-shrink:0;border-radius:8px;border:1px solid {{ theme.borderColor }};background:transparent;color:{{ theme.textSecondary }};cursor:pointer;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"></rect><line x1="9" y1="4" x2="9" y2="20"></line></svg>
+      </button>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="{{ theme.accent }}" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+        <span style="font-size:17px;font-weight:800;letter-spacing:-0.02em;">Folio</span>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;min-width:0;">
+      <span style="font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:360px;">{{ currentDoc.title }}</span>
+      <span style="font-size:10.5px;font-weight:700;letter-spacing:0.04em;padding:3px 9px;border-radius:20px;background:{{ theme.accentSoft }};color:{{ theme.accent }};flex-shrink:0;">{{ currentDoc.type }}</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;flex-shrink:0;">
+      <button onClick="{{ toggleDarkMode }}" title="Toggle theme" style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:8px;border:1px solid {{ theme.borderColor }};background:transparent;color:{{ theme.textSecondary }};cursor:pointer;">
+        <sc-if value="{{ darkMode }}" hint-placeholder-val="{{ false }}">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><line x1="12" y1="1.5" x2="12" y2="3.5"></line><line x1="12" y1="20.5" x2="12" y2="22.5"></line><line x1="3.5" y1="12" x2="1.5" y2="12"></line><line x1="22.5" y1="12" x2="20.5" y2="12"></line><line x1="5" y1="5" x2="6.5" y2="6.5"></line><line x1="17.5" y1="17.5" x2="19" y2="19"></line><line x1="5" y1="19" x2="6.5" y2="17.5"></line><line x1="17.5" y1="6.5" x2="19" y2="5"></line></svg>
+        </sc-if>
+        <sc-if value="{{ notDarkMode }}" hint-placeholder-val="{{ true }}">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.5A9 9 0 1 1 11.5 3a7 7 0 0 0 9.5 9.5z"></path></svg>
+        </sc-if>
+      </button>
+      <div style="width:34px;height:34px;border-radius:50%;background:{{ theme.accentSoft }};color:{{ theme.accent }};display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:700;">JD</div>
+    </div>
+  </header>
+
+  <div style="flex:1;min-height:0;display:flex;overflow:hidden;">
+
+    <aside style="width:{{ sidebarWidthPx }};flex-shrink:0;overflow:hidden;background:{{ theme.leftPanelBg }};border-right:1px solid {{ theme.borderColor }};transition:width 0.22s ease;">
+      <div style="width:288px;height:100%;display:flex;flex-direction:column;padding:16px;">
+        <input type="file" ref="{{ fileInputRef }}" onChange="{{ handleFileChange }}" style="display:none;" />
+        <button onClick="{{ triggerUpload }}" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:22px 14px;border-radius:12px;border:1.5px dashed {{ theme.accent }};background:{{ theme.accentSoft }};color:{{ theme.accent }};cursor:pointer;font-family:inherit;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"></path><path d="M6 9l6-6 6 6"></path><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"></path></svg>
+          <span style="font-size:13px;font-weight:700;">Upload new document</span>
+          <span style="font-size:11.5px;font-weight:500;opacity:0.75;">Drag & drop or click to browse</span>
+        </button>
+
+        <div style="margin-top:22px;margin-bottom:10px;font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:{{ theme.textMuted }};">Recent</div>
+
+        <div style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:6px;margin:0 -8px;padding:0 8px 8px;">
+          <sc-for list="{{ documentsView }}" as="doc" hint-placeholder-count="5">
+            <div onClick="{{ doc.onClick }}" onContextMenu="{{ doc.onContextMenu }}" style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;border:1px solid {{ doc.rowBorder }};background:{{ doc.rowBg }};cursor:pointer;width:100%;">
+              <div style="width:34px;height:34px;border-radius:8px;background:{{ doc.badgeBg }};color:{{ doc.badgeColor }};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;flex-shrink:0;letter-spacing:0.02em;">{{ doc.type }}</div>
+              <div style="flex:1;min-width:0;">
+                <sc-if value="{{ doc.isRenaming }}" hint-placeholder-val="{{ false }}">
+                  <input value="{{ renameDraft }}" onChange="{{ onRenameChange }}" onKeyDown="{{ onRenameKeyDown }}" onBlur="{{ commitRename }}" onClick="{{ stopPropagationNoop }}" autoFocus="{{ true }}" style="font-size:13px;font-weight:600;width:100%;padding:2px 4px;border-radius:5px;border:1px solid {{ theme.accent }};background:{{ theme.inputBg }};color:{{ theme.textPrimary }};font-family:inherit;" />
+                </sc-if>
+                <sc-if value="{{ doc.isNotRenaming }}" hint-placeholder-val="{{ true }}">
+                  <div style="font-size:13px;font-weight:600;color:{{ theme.textPrimary }};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ doc.title }}</div>
+                </sc-if>
+                <div style="font-size:11px;color:{{ theme.textMuted }};margin-top:2px;">{{ doc.lastOpened }}</div>
+                <div style="height:4px;border-radius:2px;background:{{ theme.borderColor }};margin-top:6px;overflow:hidden;">
+                  <div style="height:100%;border-radius:2px;background:{{ theme.accent }};width:{{ doc.progressPercent }}%;"></div>
+                </div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </aside>
+
+    <main style="flex:1;min-width:0;display:flex;flex-direction:column;background:{{ theme.centerSurroundBg }};overflow:hidden;">
+      <div style="flex-shrink:0;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:26px;padding:10px 20px;background:{{ theme.headerBg }};border-bottom:1px solid {{ theme.borderColor }};">
+        <div style="display:flex;align-items:center;gap:6px;">
+          <button onClick="{{ goPrevPage }}" style="width:30px;height:30px;border-radius:7px;border:1px solid {{ theme.borderColor }};background:transparent;color:{{ theme.textSecondary }};display:flex;align-items:center;justify-content:center;cursor:pointer;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          <span style="font-size:13px;color:{{ theme.textSecondary }};">Page</span>
+          <input type="number" value="{{ currentPage }}" onChange="{{ onPageInputChange }}" style="width:52px;text-align:center;padding:5px 4px;border-radius:6px;border:1px solid {{ theme.borderColor }};background:{{ theme.inputBg }};color:{{ theme.textPrimary }};font-size:13px;font-family:inherit;" />
+          <span style="font-size:13px;color:{{ theme.textSecondary }};">of {{ totalPages }}</span>
+          <button onClick="{{ goNextPage }}" style="width:30px;height:30px;border-radius:7px;border:1px solid {{ theme.borderColor }};background:transparent;color:{{ theme.textSecondary }};display:flex;align-items:center;justify-content:center;cursor:pointer;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+        </div>
+
+        <div style="width:1px;height:22px;background:{{ theme.borderColor }};"></div>
+
+        <div style="display:flex;align-items:center;gap:6px;">
+          <button onClick="{{ zoomOut }}" style="width:30px;height:30px;border-radius:7px;border:1px solid {{ theme.borderColor }};background:transparent;color:{{ theme.textSecondary }};display:flex;align-items:center;justify-content:center;cursor:pointer;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          </button>
+          <span style="font-size:13px;color:{{ theme.textSecondary }};width:42px;text-align:center;">{{ zoom }}%</span>
+          <button onClick="{{ zoomIn }}" style="width:30px;height:30px;border-radius:7px;border:1px solid {{ theme.borderColor }};background:transparent;color:{{ theme.textSecondary }};display:flex;align-items:center;justify-content:center;cursor:pointer;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          </button>
+        </div>
+
+        <sc-if value="{{ ttsEnabled }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <div style="width:1px;height:22px;background:{{ theme.borderColor }};margin-right:6px;"></div>
+            <button onClick="{{ cycleSpeed }}" style="height:30px;padding:0 10px;border-radius:7px;border:1px solid {{ theme.borderColor }};background:transparent;color:{{ theme.textSecondary }};font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">{{ speedLabel }}</button>
+            <button onClick="{{ togglePlay }}" title="Read out loud" style="width:30px;height:30px;border-radius:7px;border:1px solid {{ theme.borderColor }};background:transparent;color:{{ theme.accent }};display:flex;align-items:center;justify-content:center;cursor:pointer;">
+              <sc-if value="{{ isPlaying }}" hint-placeholder-val="{{ false }}">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><rect x="6" y="5" width="4" height="14" rx="1"></rect><rect x="14" y="5" width="4" height="14" rx="1"></rect></svg>
+              </sc-if>
+              <sc-if value="{{ isNotPlaying }}" hint-placeholder-val="{{ true }}">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M7 5v14l12-7z"></path></svg>
+              </sc-if>
+            </button>
+            <button onClick="{{ stopReading }}" title="Stop" style="width:30px;height:30px;border-radius:7px;border:1px solid {{ theme.borderColor }};background:transparent;color:{{ theme.textSecondary }};display:flex;align-items:center;justify-content:center;cursor:pointer;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><rect x="5" y="5" width="14" height="14" rx="1.5"></rect></svg>
+            </button>
+          </div>
+        </sc-if>
+      </div>
+
+      <div onScroll="{{ closeFloatingOnScroll }}" style="flex:1;overflow-y:auto;display:flex;align-items:flex-start;justify-content:center;padding:40px 24px;">
+        <div style="display:flex;max-width:920px;width:100%;min-height:600px;">
+          <div style="position:relative;flex:1;min-width:0;">
+            <div style="position:absolute;top:6px;bottom:6px;left:-8px;right:10px;background:{{ theme.pageBg }};border:1px solid {{ theme.borderColor }};border-radius:5px 0 0 5px;box-shadow:-2px 3px 8px {{ theme.shadowColor }};opacity:0.45;z-index:0;"></div>
+            <div style="position:absolute;top:3px;bottom:3px;left:-4px;right:5px;background:{{ theme.pageBg }};border:1px solid {{ theme.borderColor }};border-radius:5px 0 0 5px;box-shadow:-2px 3px 8px {{ theme.shadowColor }};opacity:0.7;z-index:1;"></div>
+            <div data-page-num="{{ currentPage }}" style="position:relative;z-index:2;height:100%;background:{{ theme.pageBg }};border-radius:5px 0 0 5px;box-shadow:0 20px 40px {{ theme.shadowColor }};padding:52px 44px 40px;display:flex;flex-direction:column;">
+              <div style="flex:1;font-family:'Lora',Georgia,serif;font-size:{{ bodyFontSize }}px;line-height:1.75;color:{{ theme.textPrimary }};">
+                <sc-for list="{{ leftParaViews }}" as="para" hint-placeholder-count="2">
+                  <p style="margin:0 0 16px;">
+                    <sc-for list="{{ para.segments }}" as="seg" hint-placeholder-count="1">
+                      <sc-if value="{{ seg.isHighlight }}" hint-placeholder-val="{{ false }}">
+                        <span style="background:{{ seg.color }};color:#1A1A1A;border-radius:2px;padding:0 1px;">{{ seg.text }}<sc-if value="{{ seg.hasNote }}" hint-placeholder-val="{{ false }}"><button onClick="{{ seg.onNoteClick }}" title="View note" style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;border:none;background:{{ theme.accent }};color:{{ theme.accentContrast }};cursor:pointer;margin-left:3px;vertical-align:text-top;padding:0;"><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M4 4h16v12H8l-4 4z"></path></svg></button></sc-if></span>
+                      </sc-if>
+                      <sc-if value="{{ seg.notHighlight }}" hint-placeholder-val="{{ true }}">{{ seg.text }}</sc-if>
+                    </sc-for>
+                  </p>
+                </sc-for>
+              </div>
+              <div style="text-align:center;font-size:11.5px;color:{{ theme.textMuted }};">{{ currentPage }}</div>
+            </div>
+          </div>
+
+          <div style="width:26px;flex-shrink:0;position:relative;z-index:3;background:linear-gradient(to right, rgba(0,0,0,0.16), rgba(0,0,0,0.02) 20%, rgba(0,0,0,0.02) 80%, rgba(0,0,0,0.16));"></div>
+
+          <div style="position:relative;flex:1;min-width:0;">
+            <div style="position:absolute;top:6px;bottom:6px;left:10px;right:-8px;background:{{ theme.pageBg }};border:1px solid {{ theme.borderColor }};border-radius:0 5px 5px 0;box-shadow:2px 3px 8px {{ theme.shadowColor }};opacity:0.45;z-index:0;"></div>
+            <div style="position:absolute;top:3px;bottom:3px;left:5px;right:-4px;background:{{ theme.pageBg }};border:1px solid {{ theme.borderColor }};border-radius:0 5px 5px 0;box-shadow:2px 3px 8px {{ theme.shadowColor }};opacity:0.7;z-index:1;"></div>
+            <div data-page-num="{{ rightPageNum }}" style="position:relative;z-index:2;height:100%;background:{{ theme.pageBg }};border-radius:0 5px 5px 0;box-shadow:0 20px 40px {{ theme.shadowColor }};padding:52px 44px 40px;display:flex;flex-direction:column;">
+              <div style="flex:1;font-family:'Lora',Georgia,serif;font-size:{{ bodyFontSize }}px;line-height:1.75;color:{{ theme.textPrimary }};">
+                <sc-for list="{{ rightParaViews }}" as="para" hint-placeholder-count="2">
+                  <p style="margin:0 0 16px;">
+                    <sc-for list="{{ para.segments }}" as="seg" hint-placeholder-count="1">
+                      <sc-if value="{{ seg.isHighlight }}" hint-placeholder-val="{{ false }}">
+                        <span style="background:{{ seg.color }};color:#1A1A1A;border-radius:2px;padding:0 1px;">{{ seg.text }}<sc-if value="{{ seg.hasNote }}" hint-placeholder-val="{{ false }}"><button onClick="{{ seg.onNoteClick }}" title="View note" style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;border:none;background:{{ theme.accent }};color:{{ theme.accentContrast }};cursor:pointer;margin-left:3px;vertical-align:text-top;padding:0;"><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M4 4h16v12H8l-4 4z"></path></svg></button></sc-if></span>
+                      </sc-if>
+                      <sc-if value="{{ seg.notHighlight }}" hint-placeholder-val="{{ true }}">{{ seg.text }}</sc-if>
+                    </sc-for>
+                  </p>
+                </sc-for>
+              </div>
+              <div style="text-align:center;font-size:11.5px;color:{{ theme.textMuted }};">{{ rightPageNum }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <aside style="width:{{ assistantWidthPx }};flex-shrink:0;overflow:hidden;background:{{ theme.rightPanelBg }};border-left:1px solid {{ theme.borderColor }};transition:width 0.22s ease;">
+      <div style="width:380px;height:100%;display:flex;flex-direction:column;">
+      <div style="flex-shrink:0;padding:16px 18px 0;">
+        <div style="font-size:14.5px;font-weight:700;">Document Assistant</div>
+        <div style="font-size:12px;color:{{ theme.textMuted }};margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Ask about {{ currentDoc.title }}</div>
+        <div style="display:flex;gap:16px;margin-top:14px;border-bottom:1px solid {{ theme.borderColor }};">
+          <button onClick="{{ setTabChat }}" style="padding:0 0 9px;border:none;border-bottom:2px solid {{ chatTabBorder }};background:transparent;color:{{ chatTabColor }};font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;">Chat</button>
+          <button onClick="{{ setTabNotes }}" style="padding:0 0 9px;border:none;border-bottom:2px solid {{ notesTabBorder }};background:transparent;color:{{ notesTabColor }};font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px;">Notes<sc-if value="{{ hasNotes }}" hint-placeholder-val="{{ false }}"><span style="font-size:10px;background:{{ theme.accentSoft }};color:{{ theme.accent }};padding:1px 6px;border-radius:10px;font-weight:800;">{{ notesCount }}</span></sc-if></button>
+        </div>
+      </div>
+
+      <sc-if value="{{ isChatTab }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:1;overflow-y:auto;padding:16px 18px;display:flex;flex-direction:column;gap:14px;">
+          <sc-for list="{{ chatMessagesView }}" as="msg" hint-placeholder-count="2">
+            <sc-if value="{{ msg.isUser }}" hint-placeholder-val="{{ false }}">
+              <div style="align-self:flex-end;max-width:82%;background:{{ theme.accent }};color:{{ theme.accentContrast }};padding:10px 13px;border-radius:14px 14px 3px 14px;font-size:13.5px;line-height:1.5;">{{ msg.text }}</div>
+            </sc-if>
+            <sc-if value="{{ msg.isAssistant }}" hint-placeholder-val="{{ true }}">
+              <div style="align-self:flex-start;max-width:88%;display:flex;flex-direction:column;gap:6px;">
+                <div style="background:{{ theme.bubbleAssistantBg }};border:1px solid {{ theme.borderColor }};color:{{ theme.textPrimary }};padding:10px 13px;border-radius:14px 14px 14px 3px;font-size:13.5px;line-height:1.55;">{{ msg.text }}</div>
+                <sc-if value="{{ msg.hasCitation }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ msg.onCiteClick }}" title="Jump to this page" style="align-self:flex-start;font-size:11px;font-weight:700;color:{{ theme.accent }};background:{{ theme.accentSoft }};border:none;padding:3px 9px;border-radius:20px;cursor:pointer;font-family:inherit;">{{ msg.citation }}</button>
+                </sc-if>
+              </div>
+            </sc-if>
+          </sc-for>
+          <sc-if value="{{ isAiTyping }}" hint-placeholder-val="{{ false }}">
+            <div style="align-self:flex-start;display:flex;gap:4px;padding:12px 13px;background:{{ theme.bubbleAssistantBg }};border:1px solid {{ theme.borderColor }};border-radius:14px 14px 14px 3px;">
+              <span style="width:6px;height:6px;border-radius:50%;background:{{ theme.textMuted }};animation:typingDot 1.2s infinite ease-in-out;display:inline-block;"></span>
+              <span style="width:6px;height:6px;border-radius:50%;background:{{ theme.textMuted }};animation:typingDot 1.2s infinite ease-in-out;animation-delay:0.15s;display:inline-block;"></span>
+              <span style="width:6px;height:6px;border-radius:50%;background:{{ theme.textMuted }};animation:typingDot 1.2s infinite ease-in-out;animation-delay:0.3s;display:inline-block;"></span>
+            </div>
+          </sc-if>
+        </div>
+
+        <div style="flex-shrink:0;padding:12px 14px;border-top:1px solid {{ theme.borderColor }};display:flex;align-items:flex-end;gap:8px;">
+          <button onClick="{{ insertPageRef }}" title="Reference this page" style="width:34px;height:34px;flex-shrink:0;border-radius:8px;border:1px solid {{ theme.borderColor }};background:transparent;color:{{ theme.textSecondary }};display:flex;align-items:center;justify-content:center;cursor:pointer;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a5.5 5.5 0 0 1-7.78-7.78l9.19-9.19a3.5 3.5 0 0 1 4.95 4.95L9.41 17.41a1.5 1.5 0 0 1-2.12-2.12l8.49-8.49"></path></svg>
+          </button>
+          <textarea value="{{ chatInput }}" onChange="{{ onChatInputChange }}" onKeyDown="{{ onChatKeyDown }}" placeholder="Ask about this document..." rows="1" style="flex:1;resize:none;max-height:90px;padding:9px 12px;border-radius:10px;border:1px solid {{ theme.borderColor }};background:{{ theme.inputBg }};color:{{ theme.textPrimary }};font-size:13.5px;font-family:inherit;line-height:1.4;"></textarea>
+          <button onClick="{{ sendMessage }}" disabled="{{ sendDisabled }}" style="width:34px;height:34px;flex-shrink:0;border-radius:8px;border:none;background:{{ theme.accent }};color:{{ theme.accentContrast }};display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:{{ sendOpacity }};">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+          </button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isNotesTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1;overflow-y:auto;padding:14px 18px;display:flex;flex-direction:column;gap:10px;">
+          <sc-if value="{{ hasNotes }}" hint-placeholder-val="{{ false }}">
+            <sc-for list="{{ notesView }}" as="note" hint-placeholder-count="1">
+              <div style="border:1px solid {{ note.borderColor }};border-radius:10px;padding:10px 12px;background:{{ theme.bubbleAssistantBg }};">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;">
+                  <button onClick="{{ note.onJump }}" style="font-size:10.5px;font-weight:700;color:{{ theme.accent }};background:{{ theme.accentSoft }};border:none;padding:2px 8px;border-radius:20px;cursor:pointer;font-family:inherit;">Page {{ note.page }}</button>
+                  <button onClick="{{ note.onDelete }}" title="Delete" style="background:transparent;border:none;color:{{ theme.textMuted }};cursor:pointer;padding:2px;display:flex;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path></svg>
+                  </button>
+                </div>
+                <div style="font-size:12.5px;font-style:italic;color:{{ theme.textSecondary }};border-left:3px solid {{ note.color }};padding-left:8px;margin-bottom:6px;line-height:1.4;">"{{ note.text }}"</div>
+                <sc-if value="{{ note.hasNoteText }}" hint-placeholder-val="{{ false }}">
+                  <div style="font-size:13px;color:{{ theme.textPrimary }};line-height:1.5;">{{ note.note }}</div>
+                </sc-if>
+              </div>
+            </sc-for>
+          </sc-if>
+          <sc-if value="{{ noNotes }}" hint-placeholder-val="{{ true }}">
+            <div style="text-align:center;color:{{ theme.textMuted }};font-size:13px;padding:30px 10px;line-height:1.5;">No notes yet. Select text in the reader and choose "Add note" or "Highlight".</div>
+          </sc-if>
+        </div>
+      </sc-if>
+      </div>
+    </aside>
+
+  </div>
+
+  <button onClick="{{ toggleAssistant }}" title="Toggle Document Assistant" style="position:fixed;right:24px;bottom:24px;width:52px;height:52px;border-radius:50%;background:{{ theme.accent }};color:{{ theme.accentContrast }};border:none;box-shadow:0 8px 20px {{ theme.shadowColor }};display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:55;">
+    <sc-if value="{{ assistantOpen }}" hint-placeholder-val="{{ true }}">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
+    </sc-if>
+    <sc-if value="{{ assistantClosed }}" hint-placeholder-val="{{ false }}">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+    </sc-if>
+  </button>
+
+  <sc-if value="{{ contextMenuOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeContextMenu }}" onContextMenu="{{ closeContextMenuPrevent }}" style="position:fixed;inset:0;z-index:40;"></div>
+    <div style="position:fixed;left:{{ contextMenuLeftPx }};top:{{ contextMenuTopPx }};z-index:41;background:{{ theme.headerBg }};border:1px solid {{ theme.borderColor }};border-radius:10px;box-shadow:0 12px 28px {{ theme.shadowColor }};padding:6px;min-width:150px;display:flex;flex-direction:column;gap:2px;">
+      <button onClick="{{ contextMenuActions.onRename }}" style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:7px;border:none;background:transparent;color:{{ theme.textPrimary }};font-size:13px;cursor:pointer;text-align:left;font-family:inherit;" style-hover="background:{{ theme.accentSoft }};">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg>
+        Rename
+      </button>
+      <button onClick="{{ contextMenuActions.onDuplicate }}" style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:7px;border:none;background:transparent;color:{{ theme.textPrimary }};font-size:13px;cursor:pointer;text-align:left;font-family:inherit;" style-hover="background:{{ theme.accentSoft }};">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+        Duplicate
+      </button>
+      <button onClick="{{ contextMenuActions.onDelete }}" style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:7px;border:none;background:transparent;color:#DC2626;font-size:13px;cursor:pointer;text-align:left;font-family:inherit;" style-hover="background:rgba(220,38,38,0.1);">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path></svg>
+        Delete
+      </button>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ toolbarOpen }}" hint-placeholder-val="{{ false }}">
+    <div ref="{{ toolbarRef }}" style="position:fixed;left:{{ toolbarLeftPx }};top:{{ toolbarTopPx }};transform:translate(-50%, calc(-100% - 10px));z-index:50;background:{{ theme.headerBg }};border:1px solid {{ theme.borderColor }};border-radius:10px;box-shadow:0 12px 24px {{ theme.shadowColor }};padding:6px;display:flex;align-items:center;gap:2px;">
+      <sc-if value="{{ toolbarActionsMode }}" hint-placeholder-val="{{ true }}">
+        <button onClick="{{ askAi }}" title="Ask AI about this" style="width:30px;height:30px;border-radius:7px;border:none;background:transparent;color:{{ theme.textSecondary }};display:flex;align-items:center;justify-content:center;cursor:pointer;" style-hover="background:{{ theme.accentSoft }};color:{{ theme.accent }};">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+        </button>
+        <button onClick="{{ openHighlightPicker }}" title="Highlight" style="width:30px;height:30px;border-radius:7px;border:none;background:transparent;color:{{ theme.textSecondary }};display:flex;align-items:center;justify-content:center;cursor:pointer;" style-hover="background:{{ theme.accentSoft }};color:{{ theme.accent }};">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m9 11-6 6v3h3l6-6"></path><path d="m22 2-7.5 7.5"></path><path d="m17.5 4.5 3 3"></path></svg>
+        </button>
+        <button onClick="{{ copySelection }}" title="Copy" style="width:30px;height:30px;border-radius:7px;border:none;background:transparent;color:{{ theme.textSecondary }};display:flex;align-items:center;justify-content:center;cursor:pointer;" style-hover="background:{{ theme.accentSoft }};color:{{ theme.accent }};">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+        </button>
+        <button onClick="{{ openNoteInput }}" title="Add note" style="width:30px;height:30px;border-radius:7px;border:none;background:transparent;color:{{ theme.textSecondary }};display:flex;align-items:center;justify-content:center;cursor:pointer;" style-hover="background:{{ theme.accentSoft }};color:{{ theme.accent }};">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        </button>
+      </sc-if>
+      <sc-if value="{{ toolbarHighlightMode }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ backToActions }}" title="Back" style="width:26px;height:26px;border-radius:7px;border:none;background:transparent;color:{{ theme.textSecondary }};display:flex;align-items:center;justify-content:center;cursor:pointer;margin-right:4px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+        <sc-for list="{{ highlightSwatches }}" as="sw" hint-placeholder-count="4">
+          <button onClick="{{ sw.onClick }}" title="Highlight" style="width:22px;height:22px;border-radius:50%;background:{{ sw.color }};border:2px solid transparent;cursor:pointer;padding:0;margin:0 2px;" style-hover="border-color:{{ theme.textMuted }};"></button>
+        </sc-for>
+      </sc-if>
+      <sc-if value="{{ toolbarNoteMode }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:6px;width:220px;padding:2px;">
+          <textarea value="{{ noteDraft }}" onChange="{{ onNoteDraftChange }}" placeholder="Add a note..." rows="2" autoFocus="{{ true }}" style="resize:none;padding:7px 9px;border-radius:7px;border:1px solid {{ theme.borderColor }};background:{{ theme.inputBg }};color:{{ theme.textPrimary }};font-size:12.5px;font-family:inherit;"></textarea>
+          <div style="display:flex;gap:6px;justify-content:flex-end;">
+            <button onClick="{{ cancelNote }}" style="font-size:11.5px;font-weight:700;padding:5px 10px;border-radius:7px;border:1px solid {{ theme.borderColor }};background:transparent;color:{{ theme.textSecondary }};cursor:pointer;font-family:inherit;">Cancel</button>
+            <button onClick="{{ saveNote }}" style="font-size:11.5px;font-weight:700;padding:5px 10px;border-radius:7px;border:none;background:{{ theme.accent }};color:{{ theme.accentContrast }};cursor:pointer;font-family:inherit;">Save</button>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+  </sc-if>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;darkModeDefault&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Behavior&quot;},
+  &quot;ttsEnabled&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Behavior&quot;},
+  &quot;accentColor&quot;: {&quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#0F766E&quot;, &quot;options&quot;: [&quot;#166534&quot;, &quot;#4338CA&quot;, &quot;#0F766E&quot;, &quot;#B45309&quot;, &quot;#C2410C&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Behavior&quot;}
+}">
+class Component extends DCLogic {
+  fileInputRef = React.createRef();
+  toolbarRef = React.createRef();
+
+  paragraphPool = [
+    "Every system, whether biological, mechanical, or social, tends toward a state of equilibrium unless disturbed by an external force. This tendency, often mistaken for stability, is better understood as a temporary balance between opposing pressures.",
+    "Feedback loops are the mechanism by which a system regulates itself over time. A loop is reinforcing when small changes amplify, and balancing when the system works to cancel out deviation from a set point.",
+    "Consider a thermostat: it measures the temperature of a room and adjusts a heater accordingly. The loop is simple, but it demonstrates a principle that scales up to economies, ecosystems, and organizations.",
+    "The difficulty in observing a feedback loop from within it is that the observer is rarely aware of the delay between action and consequence. Delays make loops feel unpredictable even when they are, in fact, entirely deterministic.",
+    "Attention operates on similar principles. What a person notices shapes what they act on, and what they act on shapes what they continue to notice. Over time, this loop narrows or widens the field of possible thought.",
+    "Designers who understand this dynamic can build interfaces that either reinforce a user's existing habits or gently redirect them. Neither approach is inherently right; the ethical question is whether the redirection serves the user or the system itself.",
+    "A well-designed interface disappears into the background of a task, leaving only the outcome visible. This is the quiet ideal that most tools fail to reach, not for lack of ambition but because visibility is often mistaken for value.",
+    "In practice, restraint is harder to design than abundance. Every additional control competes for the same limited attention as the content it is meant to serve.",
+    "The history of tools is, in part, a history of subtraction: removing the parts that no longer need to be seen, while keeping the function they once served intact.",
+    "None of this suggests that complexity is undesirable. It suggests only that complexity should live where it is useful, and disappear everywhere else."
+  ];
+
+  state = {
+    darkMode: false,
+    sidebarOpen: true,
+    currentDocId: 1,
+    currentPage: 12,
+    zoom: 100,
+    isReading: false,
+    isPaused: false,
+    readSpeed: 1,
+    documents: [
+      { id: 1, title: 'Notes on Complex Systems', type: 'PDF', pages: 340, progress: 0.35, lastOpened: '2h ago' },
+      { id: 2, title: 'Interface Design Handbook', type: 'PDF', pages: 280, progress: 0.6, lastOpened: 'Yesterday' },
+      { id: 3, title: 'Field Guide to Focus', type: 'EPUB', pages: 210, progress: 0.82, lastOpened: '3 days ago' },
+      { id: 4, title: 'Q3 Board Report', type: 'DOCX', pages: 48, progress: 0.1, lastOpened: '1 week ago' },
+      { id: 5, title: 'An Introduction to Signal Processing', type: 'PDF', pages: 400, progress: 0.22, lastOpened: '2 weeks ago' }
+    ],
+    chatMessages: [
+      { id: 1, role: 'user', text: 'What does this page say about feedback loops?' },
+      { id: 2, role: 'assistant', text: 'It distinguishes two types: reinforcing loops, where small changes amplify, and balancing loops, which work to cancel out deviation from a set point. The thermostat is used as the example.', citation: 'Page 12' }
+    ],
+    chatInput: '',
+    rightTab: 'chat',
+    contextMenu: null,
+    renamingId: null,
+    renameDraft: '',
+    selectionToolbar: null,
+    noteDraft: '',
+    highlightFocusId: null,
+    highlights: [
+      { id: 1, docId: 1, page: 12, text: 'reinforcing when small changes amplify', color: '#BBF7D0', note: 'Good example of positive feedback — relate to compounding interest.' }
+    ],
+    assistantOpen: true
+  };
+
+  componentDidMount() {
+    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+      this.setState({ sidebarOpen: false });
+    }
+    if (this.props.darkModeDefault) {
+      this.setState({ darkMode: true });
+    }
+    document.addEventListener('mouseup', this.handleGlobalMouseUp);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('mouseup', this.handleGlobalMouseUp);
+  }
+
+  hexToRgba(hex, alpha) {
+    const h = hex.replace('#', '');
+    const full = h.length === 3 ? h.split('').map(c => c + c).join('') : h;
+    const bigint = parseInt(full, 16);
+    const r = (bigint >> 16) & 255, g = (bigint >> 8) & 255, b = bigint & 255;
+    return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
+  }
+
+  lighten(hex, percent) {
+    const h = hex.replace('#', '');
+    const full = h.length === 3 ? h.split('').map(c => c + c).join('') : h;
+    const bigint = parseInt(full, 16);
+    let r = (bigint >> 16) & 255, g = (bigint >> 8) & 255, b = bigint & 255;
+    r = Math.round(r + (255 - r) * percent);
+    g = Math.round(g + (255 - g) * percent);
+    b = Math.round(b + (255 - b) * percent);
+    return 'rgb(' + r + ',' + g + ',' + b + ')';
+  }
+
+  getParas(pageNum) {
+    const pool = this.paragraphPool;
+    const at = (n) => pool[((n - 1) % pool.length + pool.length) % pool.length];
+    return { left: [at(pageNum), at(pageNum + 1)], right: [at(pageNum + 2), at(pageNum + 3)] };
+  }
+
+  getCurrentPageText(s) {
+    const p = this.getParas(s.currentPage);
+    return p.left.concat(p.right).join(' ');
+  }
+
+  getSegments(text, docId, page) {
+    const matches = this.state.highlights.filter(h => h.docId === docId && h.page === page && text.includes(h.text));
+    if (!matches.length) return [{ text, highlight: null }];
+    const ranges = matches
+      .map(h => ({ start: text.indexOf(h.text), end: text.indexOf(h.text) + h.text.length, h }))
+      .sort((a, b) => a.start - b.start);
+    const clean = [];
+    let lastEnd = 0;
+    ranges.forEach(r => { if (r.start >= lastEnd) { clean.push(r); lastEnd = r.end; } });
+    const segments = [];
+    let cursor = 0;
+    clean.forEach(r => {
+      if (r.start > cursor) segments.push({ text: text.slice(cursor, r.start), highlight: null });
+      segments.push({ text: text.slice(r.start, r.end), highlight: r.h });
+      cursor = r.end;
+    });
+    if (cursor < text.length) segments.push({ text: text.slice(cursor), highlight: null });
+    return segments;
+  }
+
+  buildParaViews(paras, docId, pageNum) {
+    return paras.map((text, i) => ({
+      key: pageNum + '-' + i,
+      segments: this.getSegments(text, docId, pageNum).map(seg => ({
+        text: seg.text,
+        isHighlight: !!seg.highlight,
+        notHighlight: !seg.highlight,
+        color: seg.highlight ? seg.highlight.color : 'transparent',
+        hasNote: !!(seg.highlight && seg.highlight.note),
+        onNoteClick: seg.highlight && seg.highlight.note ? () => this.focusNote(seg.highlight.id) : undefined
+      }))
+    }));
+  }
+
+  toggleSidebar = () => this.setState(s => ({ sidebarOpen: !s.sidebarOpen }));
+  toggleDarkMode = () => this.setState(s => ({ darkMode: !s.darkMode }));
+
+  selectDocument = (id) => this.setState({ currentDocId: id, currentPage: 1, selectionToolbar: null });
+  toggleAssistant = () => this.setState(s => ({ assistantOpen: !s.assistantOpen }));
+  closeFloatingOnScroll = () => { if (this.state.selectionToolbar) this.setState({ selectionToolbar: null }); };
+
+  triggerUpload = () => { if (this.fileInputRef.current) this.fileInputRef.current.click(); };
+
+  handleFileChange = (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const parts = file.name.split('.');
+    const ext = parts.length > 1 ? parts.pop().toUpperCase() : 'DOC';
+    const title = parts.join('.') || file.name;
+    const typeMap = { PDF: 'PDF', DOCX: 'DOCX', DOC: 'DOCX', EPUB: 'EPUB' };
+    const type = typeMap[ext] || ext.slice(0, 4);
+    const newDoc = { id: Date.now(), title, type, pages: 120, progress: 0, lastOpened: 'Just now' };
+    this.setState(s => ({ documents: [newDoc, ...s.documents], currentDocId: newDoc.id, currentPage: 1 }));
+    e.target.value = '';
+  };
+
+  goPrevPage = () => this.setState(s => ({ currentPage: Math.max(1, s.currentPage - 2), selectionToolbar: null }));
+  goNextPage = () => this.setState(s => {
+    const doc = s.documents.find(d => d.id === s.currentDocId);
+    const max = Math.max(1, doc.pages - 1);
+    return { currentPage: Math.min(max, s.currentPage + 2), selectionToolbar: null };
+  });
+
+  onPageInputChange = (e) => {
+    const val = parseInt(e.target.value, 10);
+    if (isNaN(val)) return;
+    this.setState(s => {
+      const doc = s.documents.find(d => d.id === s.currentDocId);
+      const clamped = Math.min(Math.max(1, val), Math.max(1, doc.pages - 1));
+      return { currentPage: clamped, selectionToolbar: null };
+    });
+  };
+
+  zoomIn = () => this.setState(s => ({ zoom: Math.min(180, s.zoom + 10) }));
+  zoomOut = () => this.setState(s => ({ zoom: Math.max(60, s.zoom - 10) }));
+
+  cycleSpeed = () => {
+    const speeds = [1, 1.5, 2];
+    this.setState(s => {
+      const idx = speeds.indexOf(s.readSpeed);
+      const nextSpeed = speeds[(idx + 1) % speeds.length];
+      if (s.isReading && window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(this.getCurrentPageText(s));
+        utter.rate = nextSpeed;
+        utter.onend = () => this.setState({ isReading: false, isPaused: false });
+        window.speechSynthesis.speak(utter);
+      }
+      return { readSpeed: nextSpeed };
+    });
+  };
+
+  togglePlay = () => {
+    if (!window.speechSynthesis) return;
+    const s = this.state;
+    if (s.isReading && !s.isPaused) { window.speechSynthesis.pause(); this.setState({ isPaused: true }); return; }
+    if (s.isPaused) { window.speechSynthesis.resume(); this.setState({ isPaused: false }); return; }
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(this.getCurrentPageText(s));
+    utter.rate = s.readSpeed;
+    utter.onend = () => this.setState({ isReading: false, isPaused: false });
+    window.speechSynthesis.speak(utter);
+    this.setState({ isReading: true, isPaused: false });
+  };
+
+  stopReading = () => { if (window.speechSynthesis) window.speechSynthesis.cancel(); this.setState({ isReading: false, isPaused: false }); };
+
+  onChatInputChange = (e) => this.setState({ chatInput: e.target.value });
+  onChatKeyDown = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); this.sendMessage(); } };
+  insertPageRef = () => this.setState(s => ({ chatInput: (s.chatInput ? s.chatInput + ' ' : '') + '[Page ' + s.currentPage + '] ' }));
+
+  jumpToPage = (page) => this.setState({ currentPage: Math.max(1, page) });
+
+  sendMessage = () => {
+    const text = this.state.chatInput.trim();
+    if (!text) return;
+    const userMsg = { id: Date.now(), role: 'user', text };
+    this.setState(s => ({ chatMessages: [...s.chatMessages, userMsg], chatInput: '', isAiTyping: true }));
+    setTimeout(() => {
+      this.setState(s => {
+        const page = s.currentPage;
+        const paras = this.getParas(page);
+        const snippet = paras.left[0];
+        const templates = [
+          'Looking at page ' + page + ', the text notes: "' + snippet + '"',
+          'On page ' + page + ', it explains this in context: "' + snippet + '"',
+          'Based on page ' + page + ' of the current document: "' + snippet + '"'
+        ];
+        const chosen = templates[Math.floor(Math.random() * templates.length)];
+        const aiMsg = { id: Date.now() + 1, role: 'assistant', text: chosen, citation: 'Page ' + page };
+        return { chatMessages: [...s.chatMessages, aiMsg], isAiTyping: false };
+      });
+    }, 900);
+  };
+
+  setTabChat = () => this.setState({ rightTab: 'chat' });
+  setTabNotes = () => this.setState({ rightTab: 'notes' });
+
+  stopPropagationNoop = (e) => e.stopPropagation();
+
+  openContextMenu = (e, docId) => { e.preventDefault(); this.setState({ contextMenu: { x: e.clientX, y: e.clientY, docId } }); };
+  closeContextMenu = () => this.setState({ contextMenu: null });
+  closeContextMenuPrevent = (e) => { e.preventDefault(); this.setState({ contextMenu: null }); };
+
+  onRenameChange = (e) => this.setState({ renameDraft: e.target.value });
+  onRenameKeyDown = (e) => { if (e.key === 'Enter') { e.target.blur(); } else if (e.key === 'Escape') { this.setState({ renamingId: null }); } };
+  commitRename = () => this.setState(s => {
+    if (!s.renamingId) return null;
+    const val = s.renameDraft.trim();
+    const docs = val ? s.documents.map(d => d.id === s.renamingId ? { ...d, title: val } : d) : s.documents;
+    return { documents: docs, renamingId: null };
+  });
+
+  duplicateDoc = (id) => this.setState(s => {
+    const idx = s.documents.findIndex(d => d.id === id);
+    if (idx < 0) return { contextMenu: null };
+    const orig = s.documents[idx];
+    const copy = { ...orig, id: Date.now(), title: orig.title + ' (Copy)', lastOpened: 'Just now' };
+    const docs = [...s.documents];
+    docs.splice(idx + 1, 0, copy);
+    return { documents: docs, contextMenu: null };
+  });
+
+  deleteDoc = (id) => this.setState(s => {
+    if (s.documents.length <= 1) return { contextMenu: null };
+    const docs = s.documents.filter(d => d.id !== id);
+    let currentDocId = s.currentDocId, currentPage = s.currentPage;
+    if (id === s.currentDocId) { currentDocId = docs[0].id; currentPage = 1; }
+    return { documents: docs, currentDocId, currentPage, contextMenu: null };
+  });
+
+  handleGlobalMouseUp = (e) => {
+    if (this.toolbarRef.current && this.toolbarRef.current.contains(e.target)) return;
+    const sel = window.getSelection();
+    const text = sel ? sel.toString().trim() : '';
+    if (!text || !sel.anchorNode) {
+      if (this.state.selectionToolbar) this.setState({ selectionToolbar: null });
+      return;
+    }
+    const node = sel.anchorNode.nodeType === 3 ? sel.anchorNode.parentElement : sel.anchorNode;
+    const pageEl = node && node.closest ? node.closest('[data-page-num]') : null;
+    if (!pageEl) {
+      if (this.state.selectionToolbar) this.setState({ selectionToolbar: null });
+      return;
+    }
+    const page = parseInt(pageEl.getAttribute('data-page-num'), 10);
+    const range = sel.getRangeAt(0);
+    const rect = range.getBoundingClientRect();
+    this.setState({ selectionToolbar: { text, x: rect.left + rect.width / 2, y: rect.top, page, mode: 'actions' } });
+  };
+
+  backToActions = () => this.setState(s => ({ selectionToolbar: { ...s.selectionToolbar, mode: 'actions' } }));
+  openHighlightPicker = () => this.setState(s => ({ selectionToolbar: { ...s.selectionToolbar, mode: 'highlight' } }));
+  openNoteInput = () => this.setState(s => ({ selectionToolbar: { ...s.selectionToolbar, mode: 'note' }, noteDraft: '' }));
+  cancelNote = () => this.setState({ selectionToolbar: null, noteDraft: '' });
+  onNoteDraftChange = (e) => this.setState({ noteDraft: e.target.value });
+
+  askAi = () => {
+    const t = this.state.selectionToolbar;
+    if (!t) return;
+    this.setState(s => ({ chatInput: (s.chatInput ? s.chatInput + ' ' : '') + '"' + t.text + '" ', rightTab: 'chat', selectionToolbar: null }));
+    window.getSelection().removeAllRanges();
+  };
+
+  copySelection = () => {
+    const t = this.state.selectionToolbar;
+    if (t && navigator.clipboard) navigator.clipboard.writeText(t.text).catch(() => {});
+    this.setState({ selectionToolbar: null });
+    window.getSelection().removeAllRanges();
+  };
+
+  applyHighlight = (color) => {
+    const t = this.state.selectionToolbar;
+    if (!t) return;
+    const h = { id: Date.now(), docId: this.state.currentDocId, page: t.page, text: t.text, color, note: null };
+    this.setState(s => ({ highlights: [...s.highlights, h], selectionToolbar: null }));
+    window.getSelection().removeAllRanges();
+  };
+
+  saveNote = () => {
+    const t = this.state.selectionToolbar;
+    if (!t) return;
+    const note = this.state.noteDraft.trim();
+    if (!note) { this.setState({ selectionToolbar: null, noteDraft: '' }); return; }
+    const h = { id: Date.now(), docId: this.state.currentDocId, page: t.page, text: t.text, color: '#FDE68A', note };
+    this.setState({ highlights: [...this.state.highlights, h], selectionToolbar: null, noteDraft: '', rightTab: 'notes' });
+    window.getSelection().removeAllRanges();
+  };
+
+  focusNote = (id) => {
+    this.setState({ rightTab: 'notes', highlightFocusId: id });
+    setTimeout(() => { if (this.state.highlightFocusId === id) this.setState({ highlightFocusId: null }); }, 2500);
+  };
+
+  removeHighlight = (id) => this.setState(s => ({ highlights: s.highlights.filter(h => h.id !== id) }));
+
+  renderVals() {
+    const s = this.state;
+    const darkMode = s.darkMode;
+    const baseAccent = this.props.accentColor || '#0F766E';
+    const accent = darkMode ? this.lighten(baseAccent, 0.55) : baseAccent;
+    const accentSoft = darkMode ? this.hexToRgba(accent, 0.16) : this.hexToRgba(baseAccent, 0.12);
+    const accentContrast = darkMode ? '#12251A' : '#FFFFFF';
+
+    const theme = darkMode ? {
+      bgApp: '#191814', headerBg: '#201F1A', leftPanelBg: '#1E1D18', centerSurroundBg: '#141310',
+      pageBg: '#242219', rightPanelBg: '#201F1A', borderColor: 'rgba(255,255,255,0.08)',
+      textPrimary: '#EDEAE0', textSecondary: '#AFA99B', textMuted: '#7D7869',
+      inputBg: '#242219', bubbleAssistantBg: '#242219', shadowColor: 'rgba(0,0,0,0.55)',
+      accent, accentSoft, accentContrast
+    } : {
+      bgApp: '#FAFAF9', headerBg: '#FFFFFF', leftPanelBg: '#F4F2EC', centerSurroundBg: '#ECE9E1',
+      pageBg: '#FFFEFB', rightPanelBg: '#F7F6F2', borderColor: 'rgba(33,31,27,0.10)',
+      textPrimary: '#211F1B', textSecondary: '#5B564C', textMuted: '#8A8478',
+      inputBg: '#FFFFFF', bubbleAssistantBg: '#FFFFFF', shadowColor: 'rgba(33,31,27,0.18)',
+      accent, accentSoft, accentContrast
+    };
+
+    const currentDoc = s.documents.find(d => d.id === s.currentDocId) || s.documents[0];
+    const totalPages = currentDoc.pages;
+    const rightPageNum = Math.min(s.currentPage + 1, totalPages);
+    const paras = this.getParas(s.currentPage);
+
+    const documentsView = s.documents.map(d => {
+      const isActive = d.id === s.currentDocId;
+      return {
+        ...d,
+        progressPercent: Math.round(d.progress * 100),
+        rowBg: isActive ? theme.accentSoft : 'transparent',
+        rowBorder: isActive ? theme.accent : 'transparent',
+        badgeBg: isActive ? theme.accent : theme.borderColor,
+        badgeColor: isActive ? accentContrast : theme.textSecondary,
+        isRenaming: d.id === s.renamingId,
+        isNotRenaming: d.id !== s.renamingId,
+        onClick: () => this.selectDocument(d.id),
+        onContextMenu: (e) => this.openContextMenu(e, d.id)
+      };
+    });
+
+    const chatMessagesView = s.chatMessages.map(m => ({
+      ...m,
+      isUser: m.role === 'user',
+      isAssistant: m.role !== 'user',
+      hasCitation: !!m.citation,
+      onCiteClick: m.citation ? () => this.jumpToPage(parseInt(m.citation.replace(/\D/g, ''), 10)) : undefined
+    }));
+
+    const notesView = s.highlights.map(h => ({
+      ...h,
+      borderColor: h.id === s.highlightFocusId ? theme.accent : theme.borderColor,
+      hasNoteText: !!h.note,
+      onJump: () => this.jumpToPage(h.page),
+      onDelete: () => this.removeHighlight(h.id)
+    }));
+
+    const highlightColors = ['#FDE68A', '#BBF7D0', '#BFDBFE', '#FBCFE8'];
+    const highlightSwatches = highlightColors.map(c => ({ color: c, onClick: () => this.applyHighlight(c) }));
+
+    const isPlaying = s.isReading && !s.isPaused;
+    const cmDocId = s.contextMenu ? s.contextMenu.docId : null;
+
+    return {
+      theme, darkMode, notDarkMode: !darkMode,
+      sidebarWidthPx: s.sidebarOpen ? '288px' : '0px',
+      currentDoc, totalPages, currentPage: s.currentPage, rightPageNum,
+      leftParaViews: this.buildParaViews(paras.left, s.currentDocId, s.currentPage),
+      rightParaViews: this.buildParaViews(paras.right, s.currentDocId, rightPageNum),
+      zoom: s.zoom, bodyFontSize: Math.round(16.5 * s.zoom / 100),
+      documentsView,
+      ttsEnabled: this.props.ttsEnabled !== false,
+      isPlaying, isNotPlaying: !isPlaying, speedLabel: s.readSpeed + 'x',
+      chatMessagesView, chatInput: s.chatInput, isAiTyping: !!s.isAiTyping,
+      sendDisabled: !s.chatInput.trim(), sendOpacity: !s.chatInput.trim() ? 0.45 : 1,
+      fileInputRef: this.fileInputRef, toolbarRef: this.toolbarRef,
+      assistantOpen: s.assistantOpen, assistantClosed: !s.assistantOpen, assistantWidthPx: s.assistantOpen ? '380px' : '0px',
+      toggleAssistant: this.toggleAssistant, closeFloatingOnScroll: this.closeFloatingOnScroll,
+      isChatTab: s.rightTab === 'chat', isNotesTab: s.rightTab === 'notes',
+      chatTabBorder: s.rightTab === 'chat' ? theme.accent : 'transparent',
+      chatTabColor: s.rightTab === 'chat' ? theme.textPrimary : theme.textMuted,
+      notesTabBorder: s.rightTab === 'notes' ? theme.accent : 'transparent',
+      notesTabColor: s.rightTab === 'notes' ? theme.textPrimary : theme.textMuted,
+      hasNotes: s.highlights.length > 0, noNotes: s.highlights.length === 0, notesCount: s.highlights.length,
+      notesView,
+      contextMenuOpen: !!s.contextMenu,
+      contextMenuLeftPx: s.contextMenu ? s.contextMenu.x + 'px' : '0px',
+      contextMenuTopPx: s.contextMenu ? s.contextMenu.y + 'px' : '0px',
+      contextMenuActions: {
+        onRename: () => { const d = s.documents.find(x => x.id === cmDocId); this.setState({ renamingId: cmDocId, renameDraft: d ? d.title : '', contextMenu: null }); },
+        onDuplicate: () => this.duplicateDoc(cmDocId),
+        onDelete: () => this.deleteDoc(cmDocId)
+      },
+      renameDraft: s.renameDraft,
+      toolbarOpen: !!s.selectionToolbar,
+      toolbarLeftPx: s.selectionToolbar ? s.selectionToolbar.x + 'px' : '0px',
+      toolbarTopPx: s.selectionToolbar ? s.selectionToolbar.y + 'px' : '0px',
+      toolbarActionsMode: !!s.selectionToolbar && s.selectionToolbar.mode === 'actions',
+      toolbarHighlightMode: !!s.selectionToolbar && s.selectionToolbar.mode === 'highlight',
+      toolbarNoteMode: !!s.selectionToolbar && s.selectionToolbar.mode === 'note',
+      highlightSwatches, noteDraft: s.noteDraft,
+      toggleSidebar: this.toggleSidebar, toggleDarkMode: this.toggleDarkMode,
+      triggerUpload: this.triggerUpload, handleFileChange: this.handleFileChange,
+      goPrevPage: this.goPrevPage, goNextPage: this.goNextPage, onPageInputChange: this.onPageInputChange,
+      zoomIn: this.zoomIn, zoomOut: this.zoomOut,
+      togglePlay: this.togglePlay, stopReading: this.stopReading, cycleSpeed: this.cycleSpeed,
+      onChatInputChange: this.onChatInputChange, onChatKeyDown: this.onChatKeyDown,
+      sendMessage: this.sendMessage, insertPageRef: this.insertPageRef,
+      setTabChat: this.setTabChat, setTabNotes: this.setTabNotes,
+      stopPropagationNoop: this.stopPropagationNoop,
+      onRenameChange: this.onRenameChange, onRenameKeyDown: this.onRenameKeyDown, commitRename: this.commitRename,
+      closeContextMenu: this.closeContextMenu, closeContextMenuPrevent: this.closeContextMenuPrevent,
+      backToActions: this.backToActions, openHighlightPicker: this.openHighlightPicker, openNoteInput: this.openNoteInput,
+      cancelNote: this.cancelNote, onNoteDraftChange: this.onNoteDraftChange,
+      askAi: this.askAi, copySelection: this.copySelection, saveNote: this.saveNote
+    };
+  }
+}
+
+</script>
+</body>
+</html>
